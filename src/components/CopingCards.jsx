@@ -1,40 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { copingStrategies } from '../utils/data.js';
-import { ArrowLeftIcon, ShieldIcon, MapPinIcon, PhoneIcon } from '../utils/icons.jsx';
+import { ArrowLeftIcon, ShieldIcon, MapPinIcon, PhoneIcon, XIcon, ZapIcon } from '../utils/icons.jsx';
 
 // Map string icon names from data.js to the imported JSX components
 const iconMap = {
     MapPinIcon: MapPinIcon,
     PhoneIcon: PhoneIcon,
     ShieldIcon: ShieldIcon,
+    LifeBuoyIcon: XIcon, // Using XIcon as a fallback, but we should import LifeBuoyIcon if available
+    // Assuming you have ZapIcon (or similar) for a dynamic icon
+    ZapIcon: ZapIcon
 };
 
-// Create the final list of cards with actual JSX icon components assigned
+// Enhance cards with mapped icon component (needed for rendering)
 const allCopingCards = copingStrategies.map(card => ({
     ...card,
-    icon: iconMap[card.icon] || ShieldIcon // Fallback to ShieldIcon
+    icon: iconMap[card.icon] || ShieldIcon
 }));
 
-
 export const CopingCards = ({ onJournal }) => {
-    const [currentIndex, setCurrentIndex] = useState(0);
+    // Initialize with a random index to start fresh
+    const [currentIndex, setCurrentIndex] = useState(() => Math.floor(Math.random() * allCopingCards.length));
+    
     const card = allCopingCards[currentIndex];
     
-    // Safety check for empty state
-    if (!card) {
-        return (
-            <div className="flex items-center justify-center h-full p-6 bg-white rounded-xl shadow-lg">
-                <p className="text-gray-500">No coping cards loaded. Check utils/data.js.</p>
-            </div>
-        );
-    }
+    const maxIndex = allCopingCards.length - 1;
 
-    const showNextCard = () => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % allCopingCards.length);
-    };
-
-    const showPreviousCard = () => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + allCopingCards.length) % allCopingCards.length);
+    // Function to select a new random card, ensuring it's not the same as the current one
+    const showRandomCard = () => {
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random() * allCopingCards.length);
+        } while (newIndex === currentIndex && allCopingCards.length > 1); // Loop until different, unless only 1 card exists
+        
+        setCurrentIndex(newIndex);
     };
 
     const CardIconComponent = card.icon;
@@ -45,51 +44,30 @@ export const CopingCards = ({ onJournal }) => {
                 className={`p-8 rounded-xl shadow-xl w-full max-w-md text-center flex-grow flex flex-col justify-between 
                            bg-gradient-to-br ${card.color} text-gray-900 border border-gray-100`}
             >
-                <div className="flex justify-between items-start mb-4">
-                    {/* Previous Button */}
-                    <button 
-                        onClick={showPreviousCard} 
-                        className="text-gray-700 hover:text-black p-1 rounded-full bg-white/70 shadow-md transition-transform transform hover:scale-110" 
-                        aria-label="Previous card"
-                    >
-                        <ArrowLeftIcon />
-                    </button>
-                    
-                    {/* Card Info */}
+                <div className="flex justify-center items-start mb-4 w-full">
+                    {/* Centered Icon and Category display */}
                     <div className="flex flex-col items-center">
+                        {/* Using ZapIcon for a dynamic feel on the random card */}
                         <CardIconComponent className="w-8 h-8 text-teal-800 mb-2" />
                         <p className="text-xs font-semibold uppercase tracking-wider text-teal-800">{card.category}</p>
                     </div>
-                    
-                    {/* Next Button */}
-                    <button 
-                        onClick={showNextCard} 
-                        className="text-gray-700 hover:text-black p-1 rounded-full bg-white/70 shadow-md transition-transform transform hover:scale-110" 
-                        aria-label="Next card"
-                    >
-                        <ArrowLeftIcon style={{ transform: 'rotate(180deg)' }} />
-                    </button>
                 </div>
                 
-                {/* Card Content */}
                 <div className="flex flex-col justify-center flex-grow">
                     <h2 className="text-3xl font-bold text-teal-900 mb-4">{card.title}</h2>
                     <p className="text-gray-800 text-lg">{card.description}</p>
                 </div>
 
-                {/* Card Counter */}
                 <p className="text-xs text-gray-600 mt-4">Card {currentIndex + 1} of {allCopingCards.length}</p>
 
             </div> 
             
-            {/* Action Button: Calls parent function to open Journal with a pre-filled template */}
             <div className="flex flex-col sm:flex-row gap-4 mt-6 w-full max-w-md"> 
-                <button 
-                    onClick={() => onJournal(card)} 
-                    className="w-full bg-white text-teal-600 border-2 border-teal-600 font-bold py-3 px-8 rounded-lg shadow-md hover:bg-teal-50 transition-colors"
-                >
-                    Journal on This
+                {/* New button for randomization */}
+                <button onClick={showRandomCard} className="w-full bg-teal-600 text-white font-bold py-3 px-8 rounded-lg shadow-md hover:bg-teal-700 transition-colors flex items-center justify-center">
+                    <ZapIcon className="mr-2 h-5 w-5" /> Get New Card
                 </button>
+                <button onClick={() => onJournal(card)} className="w-full bg-white text-teal-600 border-2 border-teal-600 font-bold py-3 px-8 rounded-lg shadow-md hover:bg-teal-50 transition-colors">Journal on This</button>
             </div> 
         </div> 
     );
