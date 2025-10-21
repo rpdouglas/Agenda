@@ -3,31 +3,39 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom App Styles (from the original index.html) */
+/* |--------------------------------------------------------------------------
+| Custom App Styles
+|--------------------------------------------------------------------------
+| These styles were migrated from the original <style> block in index.html.
+*/
+
+/* Define custom font and ensure full-screen layout */
 body { 
     margin: 0; 
     padding: 0; 
-    font-family: 'Inter', sans-serif; /* Tailwind handles font, but good to include */
+    /* Set Inter as the primary font (Tailwind will handle this, but explicit CSS is safe) */
+    font-family: 'Inter', sans-serif; 
 }
 
-/* Ensure full height on root element */
 #root { 
+    display: flex; 
+    justify-content: center; 
     min-height: 100vh; 
     width: 100%; 
 }
 
-/* Preservation of special whitespace classes */
+/* Preserve line breaks for journal/workbook text */
 .whitespace-pre-wrap { 
     white-space: pre-wrap; 
 }
 
-/* Style for the Step Quote (replaces hardcoded style tag) */
+/* Style for the Step Quote (likely the source of the unclosed string error) */
 .step-quote {
     padding: 1rem;
     margin-bottom: 1.5rem;
-    border-left: 4px solid #10b981; /* teal-500 equivalent */
-    background-color: #f0fdfa; /* teal-50 equivalent */
-    color: #064e3b; /* teal-900 equivalent */
+    border-left: 4px solid #10b981; /* Teal 500 equivalent */
+    background-color: #f0fdfa; /* Teal 50 equivalent */
+    color: #064e3b; /* Emerald 900 equivalent */
     font-style: italic;
     border-radius: 0.25rem;
 }
